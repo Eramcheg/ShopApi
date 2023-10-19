@@ -1,13 +1,288 @@
+{% load static %} <!-- new -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <title>Product Page</title>
-</head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Checkout</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <script src="https://js.stripe.com/v3/"></script>  <!-- new -->
+    <script src="{% static 'main.js' %}"></script>
+    <link rel="stylesheet" href="https://cdn.tutorialjinni.com/intl-tel-input/17.0.8/css/intlTelInput.css"/>
+        <script src="https://cdn.tutorialjinni.com/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+    <script defer src="https://use.fontawesome.com/releases/v6.4.0/js/all.js"></script>
+     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .name-surname-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.input-container {
+    width: 48%;
+    display: inline-block;
+}
+        .outer-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+        .form-container {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+        .else-container{
+            padding: 20px;
+        }
+        .header-container {
+            background-color: #003665;
+            text-align: center;
+            color: #fff;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+        h1 {
+            font-size: 24px;
+            margin-top: 0;
+        }
+        p {
+            font-size: 16px;
+            text-align: start;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            margin-top: 10px;
+        }
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        body {
+  font-family: Arial, sans-serif;
+}
+
+form {
+  width: 600px;
+  margin: 0 auto;
+}
+
+label {
+  display: block;
+  margin-top: 20px;
+}
+
+input[type="text"], input[type="tel"], input[type="email"] {
+  width: 48%;
+  padding: 10px;
+  margin-top: 5px;
+}
+ label, input {
+    display: inline-block;
+  }
+button[type="submit"] {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: #4CAF50; /* Green */
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  margin-top: 20px;
+}
+.input-container {
+    width: 48%;
+    display: inline-block;
+    margin-top: 10px;
+}
+.input-container {
+    width: 48%;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.input-container label {
+    display: block; /* Make labels block-level elements */
+    margin-bottom: 5px; /* Add some space between labels and inputs */
+}
+
+.input-container input {
+    width: 100%; /* Make inputs take up the full width of their container */
+}
+  .iti__country-list {
+    width: auto !important;
+    max-width: 200px; /* Adjust this value to your preference */
+  }
+
+
+button[type="submit"]:hover {
+  background-color: #45a049; /* Darker green */
+}
+    </style>
+  </head>
 <body>
-<h1>{{ product_info.name }}</h1>
-    <p>{{ product_info.description }}</p>
-    <p>Price: ${{ product_info.price }}</p>
-    <a href="/payment/">Go to Payment</a>
+<form id="custom-form">
+    <div class="outer-container">
+        <div class="form-container">
+            <div class="header-container">
+                <h1 style="font-size: 32px">OliverWeber Pagamento</h1>
+            </div>
+            <div class="else-container">
+                <p style="font-size: 28px; text-align: center">Order-{{ product_info.description }}</p>
+                <p>Price: ${{ product_info.price }}</p>
+
+                <div class="input-container">
+                    <label for="customer-name">Nome:</label>
+                    <input type="text" id="customer-name" name="customer-name" required placeholder="Il vostro nome">
+{#                    <span class="error-message" id="name-error"></span>#}
+                </div>
+                <div class="input-container">
+                    <label for="customer-surname">Cognome:</label>
+                    <input type="text" id="customer-surname" name="customer-surname" required placeholder="Il vostro cognome">
+                </div>
+                <div class="input-container">
+                    <label for="customer-email">Email:</label>
+                    <input type="email" id="customer-email" name="customer-email"  placeholder="example@example.com">
+                </div>
+                <div class="input-container">
+                    <label for="phone-number">Telefono:</label>
+                    <input type="tel" id="phone-number" name="phone-number"  placeholder="">
+                </div>
+
+                <button type="submit" id="submitBtn">Invia l'ordine</button>
+                <ul>
+                    {% for order in product_info.orders %}
+                        <li>
+                            Order Name: {{ order.name }}, Quantity: {{ order.quantity }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</form>
+
 </body>
+<script>
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const submitButton = document.getElementById('submitBtn');
+    const nameInput = document.getElementById('customer-name');
+    const surnameInput = document.getElementById('customer-surname');
+    const emailInput = document.getElementById('customer-email');
+    const phoneInput = document.getElementById('phone-number');
+     var code = document.querySelector('.iti__selected-dial-code');
+ document.getElementById("phone-number").addEventListener("input", function () {
+        this.value = this.value.replace(/[^0-9]/, "");
+    });
+    // Function to check if all required fields are filled
+    function checkForm() {
+        const nameValue = nameInput.value.trim();
+        const surnameValue = surnameInput.value.trim();
+        const isNameValid = nameValue !== '';
+        const isSurnameValid = surnameValue !== '';
+        const isEmailValid = emailInput.value.trim() !== '';
+        const isPhoneValid = phoneInput.value.trim() !== '';
+
+        // Enable or disable the button based on the check
+        submitButton.disabled = !(isNameValid && isSurnameValid && (isEmailValid || isPhoneValid));
+    }
+
+    // Attach event listeners to the input fields
+    nameInput.addEventListener('input', checkForm);
+    surnameInput.addEventListener('input', checkForm);
+    emailInput.addEventListener('input', checkForm);
+    phoneInput.addEventListener('input', checkForm);
+
+    // Call checkForm initially to set the initial state of the submit button
+
+
+    // Handle form submission
+
+    fetch("/config/")
+.then((result) => { return result.json(); })
+.then((data) => {
+  // Initialize Stripe.js
+    const stripe = Stripe(data.publicKey);
+
+    // Updated code starts here
+    document.getElementById('custom-form').addEventListener('submit', function(event) {
+    // Prevent the form from being submitted
+    event.preventDefault();
+
+    // Get the email input value
+    const email = emailInput.value;
+    var codeValue = code.textContent;
+ const phone = phoneInput.value;
+    // Check if the form is valid
+    if (!submitButton.disabled) {
+        // If all fields are filled, proceed with Stripe checkout
+        console.log(email);
+        console.log(code);
+        console.log(phone);
+        // Get Checkout Session ID
+        fetch("/create-checkout-session/", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email: email, // Pass email to server
+                code: codeValue,
+                phone: phone,
+                // Add email to metadata
+                metadata: {
+                    email: email,
+code: codeValue,
+                phone: phone,
+                }
+            })
+        })
+        .then((result) => { return result.json(); })
+        .then((data) => {
+            console.log(data);
+            // Redirect to Stripe Checkout
+            return stripe.redirectToCheckout({sessionId: data.sessionId})
+        })
+        .then((res) => {
+            console.log(res);
+        });
+    } else {
+        // If not all fields are filled, stop here and do nothing
+        return false;
+    }
+});
+});
+    checkForm();
+    });
+
+            var input = document.querySelector("#phone-number");
+            window.intlTelInput(input, {
+                separateDialCode: true,
+                excludeCountries: ["ru"],
+                preferredCountries: ["it"]
+            });
+
+</script>
+
 </html>
