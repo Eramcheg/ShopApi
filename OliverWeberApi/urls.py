@@ -17,8 +17,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from apiShop import views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-# path('product-info/', views.get_product_info),
-path('product-info/<str:key>/', views.get_product_info, name='product_info'),
+    path('product-info/<str:key>/', views.get_product_info, name='product_info'),
+    path('config/', views.stripe_config),  # new
+    path('create-checkout-session/', views.create_checkout_session), # new
+    path('payment/', views.payment, name='payment'),
+    path('payment-confirmation/', views.payment_confirmation, name='payment_confirmation'),
+    path('success/', views.SuccessView.as_view()),
+    path('cancelled/', views.CancelledView.as_view()),
+    path('product-info/<str:key>/webhook/', views.stripe_webhook, name='stripe_webhook'),
 ]
