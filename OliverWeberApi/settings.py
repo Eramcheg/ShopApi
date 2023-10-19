@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import apiShop.apps
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,9 +26,11 @@ SECRET_KEY = 'django-insecure-x(z6j0t%#^vo_al5zjm3-xne$l9mnsi9_&8p4(y3dldz=pku^l
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
-
+STRIPE_PUBLISHABLE_KEY = 'pk_test_51NuuylF8QvBRT2VQEYpV1Am31KeF109saKphKpoVbvLKZ3sdgHV7sqxh3buC2GGb9ApbJeQ4SNgZRS01WMCV7JX300nOpxMi6Y'
+STRIPE_SECRET_KEY = 'sk_test_51NuuylF8QvBRT2VQwtnCRdjAGeM7e5KdYwjHePvGgYdxP58a4ATK8fZf0fCZ04dkNmLSMFrQ8k2y0Qshyi3UNfBr00zjt0xdL3'
+STRIPE_ENDPOINT_SECRET = 'whsec_a8cabc3d674df12b3b60984ed97eb0ea640386bfe1d5e4b4c780b6d073b71b99'
 # Application definition
 
 INSTALLED_APPS = [
@@ -116,8 +119,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
-
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']  # new
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
